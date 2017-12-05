@@ -1,0 +1,80 @@
+set hackline start
+ start:
+   score
+   iflt radar -10 defense
+   ifgt radar 17 opguard
+   friendsnear
+   ifgt radar 4 opguard  
+   enemiesnear
+   ifgt radar 4 opguard            
+   iffriend formation
+   ifnfriend bnf
+   goto start
+  
+ formation:
+  talk slave
+  switch
+  spin
+  goto start
+  
+ slave:
+   iffriend ready
+   switch
+   spin
+   goto start
+   
+ ready:
+   talk start
+   spin
+   goto start
+   
+ bnf:              # move unless obstacle in front
+  ifnempty cantmove   
+  move
+  goto start
+
+cantmove:             # spin around
+  spin
+  move
+  spin
+  ifempty start
+  spin
+  ifempty start
+  goto cantmove
+  
+defense:
+  friendsnear
+  ifgt radar 5 opguard
+  goto rightround
+  
+rightround:
+  spin
+  goto start
+  
+opguard:  
+  friendsnear
+  callsub fortify
+  ifwall wallspace
+  spin
+  goto opguard
+ 
+fortify:
+  iflt radar 4 64  # throws a return
+  ifempty dontdoit
+  return
+  
+dontdoit:
+  wait
+  wait
+  wait
+  wait
+  return
+  
+wallspace:  #Tries to build the groups away from walls
+  spin
+  callsub fortify
+  spin
+  ifnempty 58
+  move
+  goto opguard
+  
